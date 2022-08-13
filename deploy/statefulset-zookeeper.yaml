@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: zookeeper
+spec:
+  selector:
+    matchLabels:
+      app: zookeeper
+  serviceName: zookeeper
+  replicas: 1
+  updateStrategy:
+    type: RollingUpdate
+  podManagementPolicy: OrderedReady
+  template:
+    metadata:
+      labels:
+        app: zookeeper
+    spec:
+      containers:
+      - name: zookeeper
+        imagePullPolicy: Never
+        image: "localhost/zookeeper:3.8.0"
+        ports:
+        - containerPort: 2181
+          name: listener
+        command:
+          - sh
+          - /home/entrypoint/init.sh
+        readinessProbe:
+          failureThreshold: 10
+          tcpSocket:
+            port: 2181
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 30
+        livenessProbe:
+          failureThreshold: 3
+          tcpSocket:
+            port: 2181
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 1
+        volumeMounts:
+        - name: data
+          mountPath: /home/zookeeper/data
+        - name: config
+          mountPath: /home/zookeeper/conf
+      volumes:
+      - name: config
+        hostPath:
+          path: /home/zhangduo/conf
+          type: Directory
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+    spec:
+      resources:
+        requests:
+          storage: 1024Mi
+      accessModes:
+      - ReadWriteOnce
+
