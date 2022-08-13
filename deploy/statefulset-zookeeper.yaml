@@ -26,6 +26,13 @@ spec:
         command:
           - sh
           - /home/entrypoint/init.sh
+        resources:
+          requests:
+            memory: "2Gi"
+            cpu: "500m"
+          limits:
+            memory: "2Gi"
+            cpu: "1"
         readinessProbe:
           failureThreshold: 10
           tcpSocket:

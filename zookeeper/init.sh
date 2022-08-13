@@ -1,1 +1,3 @@
-zkServer.sh start-foreground /home/zookeeper/conf/zoo.cfg
+export ZOOCFGDIR=/home/zookeeper/conf
+
+zkServer.sh start-foreground
